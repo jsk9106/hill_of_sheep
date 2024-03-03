@@ -41,6 +41,7 @@ class AppColors {
   final Color hotPink = const Color(0xFFFF3EA5);
   final Color pink = const Color(0xFFFF7ED4);
   final Color lightPink = const Color(0xFFFFB5DA);
+  final Color sun = const Color(0xFFFFb200);
   final Color black = const Color(0xFF333333);
   final Color darkGrey = const Color(0xFF858B8E);
   final Color grey = const Color(0xFFAAAAAA);

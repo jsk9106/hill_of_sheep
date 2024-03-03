@@ -4,6 +4,8 @@ import 'package:hill_of_sheep/screens/main/hill_widget.dart';
 import 'package:hill_of_sheep/screens/main/sheep.dart';
 import 'package:sprite/sprite.dart';
 
+import 'sun.dart';
+
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
 
@@ -16,6 +18,7 @@ class MainPage extends StatelessWidget {
 
           return Stack(
             children: [
+              Sun(screen: screen),
               Hills(screen: screen),
               ...List.generate(3, (index) => Sheep(screen: screen)),
             ],
