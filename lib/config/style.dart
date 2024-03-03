@@ -102,4 +102,5 @@ class Insets {
 class Times {
   final Duration ms150 = const Duration(milliseconds: 150);
   final Duration ms300 = const Duration(milliseconds: 300);
+  final Duration ms5000 = const Duration(milliseconds: 5000);
 }

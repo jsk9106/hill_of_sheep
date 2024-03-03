@@ -1,42 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hill_of_sheep/config/constants.dart';
 import 'package:hill_of_sheep/data/hill.dart';
 import 'package:hill_of_sheep/screens/main/controllers/hill_controller.dart';
-import 'dart:math';
-
-import '../../config/constants.dart';
 
 class Hills extends StatelessWidget {
-  Hills({super.key});
+  Hills({super.key, required this.screen});
+
+  final Size screen;
 
   final HillController controller = Get.put(HillController());
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final Size screen = constraints.biggest;
-
-        return GetBuilder<HillController>(
-          initState: (state) => controller.init(screen),
-          builder: (_) {
-            return Stack(
-              children: List.generate(
-                controller.hills.length,
-                (index) => OneHill(
-                  hill: controller.hills[index],
-                  screen: screen,
-                ),
-              ),
-            );
-          },
-        );
-      },
+    return Stack(
+      children: List.generate(
+        controller.hills.length,
+        (index) => OneHill(
+          hill: controller.hills[index],
+          screen: screen,
+        ),
+      ),
     );
   }
 }
 
-class OneHill extends StatelessWidget {
+class OneHill extends StatefulWidget {
   const OneHill({
     super.key,
     required this.hill,
@@ -47,75 +36,96 @@ class OneHill extends StatelessWidget {
   final Size screen;
 
   @override
+  State<OneHill> createState() => _OneHillState();
+}
+
+class _OneHillState extends State<OneHill> with SingleTickerProviderStateMixin {
+  final HillController controller = Get.put(HillController());
+
+  late final Hill hill;
+  late final AnimationController _aniController;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    hill = widget.hill;
+    controller.setPoints(screen: widget.screen, hill: hill);
+
+    _aniController = AnimationController(vsync: this, duration: $style.times.ms5000);
+    _animation = Tween<double>(begin: 0, end: 1).animate(_aniController);
+
+    _aniController.addListener(() {
+      controller.insertPoints(hill: hill, screen: widget.screen); // point 삽입
+
+      if (_aniController.isCompleted) _aniController.repeat();
+
+      setState(() {});
+    });
+
+    _aniController.forward();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _aniController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    RxDouble x = .0.obs;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => x.value += hill.speed);
-
-    return Obx(
-      () => AnimatedPositioned(
-        duration: $style.times.ms300,
-        left: x.value,
-        onEnd: () => x.value += hill.speed,
-        child: ClipPath(
-          clipper: HillClipper(
-            points: hill.points,
-            speed: hill.speed,
-          ),
-          child: Container(
-            width: Get.width,
-            height: Get.height,
-            color: hill.color,
-          ),
-        ),
+    return ClipPath(
+      clipper: HillClipper(hill),
+      child: Container(
+        color: hill.color,
       ),
     );
   }
 }
 
 class HillClipper extends CustomClipper<Path> {
-  HillClipper({super.reclip, required this.points, required this.speed});
+  HillClipper(this.hill, {super.reclip});
 
-  final List<Offset> points;
-  final double speed;
+  final Hill hill;
 
   final HillController controller = Get.find<HillController>();
 
   @override
   Path getClip(Size size) {
-    double w = size.width;
-    double h = size.height;
+    final double w = size.width;
+    final double h = size.height;
 
-    // final int gap = (w / (total - 2)).ceil(); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -2)
-    //
-    // // 랜덤 y
-    // double getY() {
-    //   final double min = h / 8;
-    //   final double max = h - min;
-    //   return min + Random().nextDouble() * max;
-    // }
-    //
-    // for (int i = 0; i < total; i++) {
-    //   final double x = (gap * i).toDouble();
-    //   final double y = getY();
-    //
-    //   points.add(Offset(x, y));
-    // }
+    Point cur = hill.points.first;
+    Point pre = cur;
 
-    Offset cur = points.first;
-    Offset pre = cur;
+    cur.x += hill.speed;
+    Path path = Path()..moveTo(cur.x, cur.y);
 
-    Path path = Path()..moveTo(cur.dx, cur.dy);
+    double preCx = cur.x;
+    double preCy = cur.y;
 
-    for (int i = 1; i < points.length; i++) {
-      cur = points[i];
+    for (int i = 1; i < hill.points.length; i++) {
+      hill.points[i].x += hill.speed;
+      cur = hill.points[i];
 
-      final double cx = (pre.dx + cur.dx) / 2;
-      final double cy = (pre.dy + cur.dy) / 2;
+      final double cx = (pre.x + cur.x) / 2;
+      final double cy = (pre.y + cur.y) / 2;
 
-      path.quadraticBezierTo(pre.dx, pre.dy, cx, cy);
+      // 곡선 그리기
+      path.quadraticBezierTo(pre.x, pre.y, cx, cy);
+
+      // 좌표 세팅
+      hill.points[i].x1 = preCx;
+      hill.points[i].y1 = preCy;
+      hill.points[i].x2 = pre.x;
+      hill.points[i].y2 = pre.y;
+      hill.points[i].x3 = cx;
+      hill.points[i].y3 = cy;
 
       pre = cur;
+      preCx = cx;
+      preCy = cy;
     }
 
     path
