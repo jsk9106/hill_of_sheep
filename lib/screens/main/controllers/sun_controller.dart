@@ -19,10 +19,10 @@ class SunController extends GetxController {
 
     // 포인트 세팅
     for (int i = 0; i < total; i++) {
-      final Point point = getCirclePoint(radius: radius, t: gap * i);
+      final Point point = getCirclePoint(t: gap * i);
       originPoints.add(point);
     }
-    // element 얕은 복사를 위해
+    // element 깊은 복사를 위해
     points = originPoints.map((e) => Point(e.x, e.y)).toList();
 
     // 포인트 업데이트
@@ -50,7 +50,7 @@ class SunController extends GetxController {
   }
 
   // 원 좌표 가져오기
-  Point getCirclePoint({required double radius, required double t}) {
+  Point getCirclePoint({required double t}) {
     final double theta = pi * 2 * t;
 
     return Point(cos(theta) * radius, sin(theta) * radius);

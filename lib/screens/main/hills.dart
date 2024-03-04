@@ -18,6 +18,7 @@ class Hills extends StatelessWidget {
         (index) => OneHill(
           hill: controller.hills[index],
           screen: screen,
+          index: index,
         ),
       ),
     );
@@ -29,10 +30,12 @@ class OneHill extends StatelessWidget {
     super.key,
     required this.hill,
     required this.screen,
+    required this.index,
   });
 
   final Hill hill;
   final Size screen;
+  final int index;
 
   final HillController controller = Get.find<HillController>();
 
@@ -40,7 +43,11 @@ class OneHill extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HillController>(
       id: hill.hashCode,
-      initState: (state) => controller.hillInit(screen: screen, hill: hill),
+      initState: (state) => controller.hillInit(
+        screen: screen,
+        hill: hill,
+        index: index,
+      ),
       builder: (_) {
         return ClipPath(
           clipper: HillClipper(hill),
@@ -58,8 +65,6 @@ class HillClipper extends CustomClipper<Path> {
 
   final Hill hill;
 
-  final HillController controller = Get.find<HillController>();
-
   @override
   Path getClip(Size size) {
     final double w = size.width;
@@ -75,7 +80,9 @@ class HillClipper extends CustomClipper<Path> {
     double preCy = cur.y;
 
     for (int i = 1; i < hill.points.length; i++) {
+      // 언덕이 뒤로 가도록
       hill.points[i].x += hill.speed;
+
       cur = hill.points[i];
 
       final double cx = (pre.x + cur.x) / 2;
@@ -84,7 +91,7 @@ class HillClipper extends CustomClipper<Path> {
       // 곡선 그리기
       path.quadraticBezierTo(pre.x, pre.y, cx, cy);
 
-      // 좌표 세팅
+      // 각도 계산에 쓰일 좌표 세팅
       hill.points[i].x1 = preCx;
       hill.points[i].y1 = preCy;
       hill.points[i].x2 = pre.x;

@@ -17,25 +17,23 @@ class HillController extends GetxController {
   List<Hill> hills = [
     Hill(
       color: $style.colors.purple,
-      speed: 1.2,
       total: 12,
       points: [],
     ),
     Hill(
       color: $style.colors.hotPink,
-      speed: 2,
       total: 10,
       points: [],
     ),
     Hill(
       color: $style.colors.pink,
-      speed: 4,
       total: 8,
       points: [],
     ),
   ];
 
-  void hillInit({required Size screen, required Hill hill}){
+  void hillInit({required Size screen, required Hill hill, required int index}){
+    hill.speed = screen.width / 500 / (hills.length - index); // 언덕 speed 세팅
     setPoints(screen: screen, hill: hill); // 초기 포인트 세팅
     updateHill(screen: screen, hill: hill);
   }
@@ -49,18 +47,9 @@ class HillController extends GetxController {
     });
   }
 
-  // 랜덤 y
-  double getY(Size screen) {
-    final double h = screen.height;
-
-    final double min = h / 8;
-    final double max = h - min;
-    return min + Random().nextDouble() * max;
-  }
-
   // 초기 points 세팅
   void setPoints({required Size screen, required Hill hill}) {
-    final int g = gap(screen.width, hill.total); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -2)
+    final int g = gap(screen.width, hill.total); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -freeNum)
 
     // points 생성
     for (int i = 0; i < hill.total; i++) {
@@ -73,7 +62,7 @@ class HillController extends GetxController {
 
   // 포인트 삽입
   void insertPoints({required Hill hill, required Size screen}) {
-    final int g = gap(screen.width, hill.total); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -2)
+    final int g = gap(screen.width, hill.total); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -freeNum)
 
     if (hill.points.first.x > -g) {
       hill.points.insert(0, Point((g * -2), getY(screen)));
@@ -82,5 +71,15 @@ class HillController extends GetxController {
     }
   }
 
-  int gap(double w, int total) => (w / (total - freeNum)).ceil(); // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -2)
+  // 랜덤 y
+  double getY(Size screen) {
+    final double h = screen.height;
+
+    final double min = h / 8;
+    final double max = h - min;
+    return min + Random().nextDouble() * max;
+  }
+
+  // 포인트 사이의 갭 (화면보다 크게 그리기 위해 total에 -freeNum)
+  int gap(double w, int total) => (w / (total - freeNum)).ceil();
 }

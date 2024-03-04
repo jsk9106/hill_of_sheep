@@ -16,14 +16,16 @@ class SheepController extends GetxController {
   double y = 0; // 양 y 좌표
   double rotation = 0; // 양 기울기
 
-  final double speed = .7 + Random().nextDouble();
+  // final double speed = .5 + Random().nextDouble() * 2;
+  late double speed;
 
   //  양 크기
   final double sheepWidth = 108;
   final double sheepHeight = 90;
 
   void init(Size screen) {
-    x = screen.width + sheepWidth;
+    x = screen.width + sheepWidth; // 양 초기 x좌표 세팅
+    speed = getSpeed(screen); // 양 스피드 세팅
 
     updateSheep(screen); // 양 상태 업데이트
   }
@@ -32,9 +34,9 @@ class SheepController extends GetxController {
   void updateSheep(Size screen) {
     Timer.periodic($style.times.ms33, (_) {
       x -= speed; // 양 y좌표 세팅
-      x = resetSheepPosition(screen: screen, x: x) ?? x; // 양 포지션 리셋
+      x = resetSheepPosition(screen) ?? x; // 양 포지션 리셋
 
-      (Point, double) quad = getSheepY(x: x);
+      (Point, double) quad = getSheepY();
       y = quad.$1.y; // 양 y좌표 세팅
       rotation = quad.$2; // 양 기울기 세팅
 
@@ -43,8 +45,9 @@ class SheepController extends GetxController {
   }
 
   // 양 위치 리셋
-  double? resetSheepPosition({required Size screen, required double x}) {
+  double? resetSheepPosition(Size screen) {
     if (x <= -sheepWidth / 2) {
+      speed = getSpeed(screen); // 양 스피드 세팅
       return x = screen.width + sheepWidth;
     }
 
@@ -52,10 +55,10 @@ class SheepController extends GetxController {
   }
 
   // 양 y좌표
-  (Point, double) getSheepY({required double x}) {
+  (Point, double) getSheepY() {
     for (int i = 1; i < hill.points.length; i++) {
       if (x >= hill.points[i].x1 && x <= hill.points[i].x3) {
-        return getSheepY2(x, hill.points[i]);
+        return getSheepY2(hill.points[i]);
       }
     }
 
@@ -63,7 +66,7 @@ class SheepController extends GetxController {
   }
 
   // 양 세부 y좌표
-  (Point, double) getSheepY2(double x, Point dot) {
+  (Point, double) getSheepY2(Point dot) {
     const total = 2000;
     (Point, double) quad = getPointOnQuad(dot.x1, dot.y1, dot.x2, dot.y2, dot.x3, dot.y3, 0);
     Point pt = quad.$1;
@@ -100,13 +103,18 @@ class SheepController extends GetxController {
     );
   }
 
-  // 2차 배지어 곡선 수식 (곡선)
+  // 2차 베지어 곡선 수식 (곡선)
   double getQuadValue(double p0, double p1, double p2, double t) {
     return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
   }
 
-  // 2차 배지어 곡선 수식 (선형)
+  // 2차 베지어 곡선 수식 (직선)
   double quadTangent(double a, double b, double c, double t) {
     return 2 * (1 - t) * (b - a) + 2 * (c - b) * t;
+  }
+
+  // 양 스피드
+  double getSpeed(Size screen){
+    return screen.width / 500 / Random().nextInt(5);
   }
 }
