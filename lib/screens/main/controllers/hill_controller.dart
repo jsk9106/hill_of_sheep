@@ -17,19 +17,19 @@ class HillController extends GetxController {
   List<Hill> hills = [
     Hill(
       color: $style.colors.purple,
-      speed: .4,
+      speed: 1.2,
       total: 12,
       points: [],
     ),
     Hill(
       color: $style.colors.hotPink,
-      speed: .7,
+      speed: 2,
       total: 10,
       points: [],
     ),
     Hill(
       color: $style.colors.pink,
-      speed: 1.2,
+      speed: 4,
       total: 8,
       points: [],
     ),

@@ -16,7 +16,7 @@ class SheepController extends GetxController {
   double y = 0; // 양 y 좌표
   double rotation = 0; // 양 기울기
 
-  final double speed = .5 + Random().nextDouble();
+  final double speed = .7 + Random().nextDouble();
 
   //  양 크기
   final double sheepWidth = 108;
