@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     return GetMaterialApp(
-      title: 'Hill Of Sheep',
+      title: '양들의 언덕',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Pretendard',

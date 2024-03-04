@@ -16,7 +16,7 @@ class SheepController extends GetxController {
   double y = 0; // 양 y 좌표
   double rotation = 0; // 양 기울기
 
-  final double speed = .1 + Random().nextDouble();
+  final double speed = .5 + Random().nextDouble();
 
   //  양 크기
   final double sheepWidth = 108;
@@ -64,7 +64,7 @@ class SheepController extends GetxController {
 
   // 양 세부 y좌표
   (Point, double) getSheepY2(double x, Point dot) {
-    const total = 1000;
+    const total = 2000;
     (Point, double) quad = getPointOnQuad(dot.x1, dot.y1, dot.x2, dot.y2, dot.x3, dot.y3, 0);
     Point pt = quad.$1;
     double preX = pt.x;
