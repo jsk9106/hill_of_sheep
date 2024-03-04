@@ -84,11 +84,6 @@ class SheepController extends GetxController {
     return quad;
   }
 
-  // 2차 배지어 곡선 수식 (곡선)
-  double getQuadValue(double p0, double p1, double p2, double t) {
-    return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
-  }
-
   // 곡선 좌표 Point
   (Point, double) getPointOnQuad(double x1, double y1, double x2, double y2, double x3, double y3, double t) {
     // 각도 구하기
@@ -103,6 +98,11 @@ class SheepController extends GetxController {
       ),
       rotation,
     );
+  }
+
+  // 2차 배지어 곡선 수식 (곡선)
+  double getQuadValue(double p0, double p1, double p2, double t) {
+    return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
   }
 
   // 2차 배지어 곡선 수식 (선형)
