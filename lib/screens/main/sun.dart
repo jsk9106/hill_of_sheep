@@ -15,13 +15,15 @@ class Sun extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: SunClipper(screen),
-      child: Container(
-        width: controller.radius,
-        height: controller.radius,
-        color: $style.colors.sun,
-      ),
+    return GetBuilder<SunController>(
+      builder: (_) {
+        return ClipPath(
+          clipper: SunClipper(screen),
+          child: Container(
+            color: $style.colors.sun,
+          ),
+        );
+      },
     );
   }
 }
@@ -35,16 +37,15 @@ class SunClipper extends CustomClipper<Path> {
 
   @override
   Path getClip(Size size) {
-    final double x = screen.width - size.width - 100;
-    final double y = screen.height * .1;
+    final double x = screen.width * .8;
+    final double y = screen.height * .15;
 
-    final Point point = controller.points.first;
-    Path path = Path()..moveTo(point.x + x, point.y + y);
+    final Point startPoint = controller.points.first;
+    Path path = Path()..moveTo(startPoint.x + x, startPoint.y + y);
 
     for (int i = 1; i < controller.points.length; i++) {
       final Point point = controller.points[i];
       path.lineTo(point.x + x, point.y + y);
-      // todo point 계산 이상함
     }
 
     path.close();
@@ -57,25 +58,3 @@ class SunClipper extends CustomClipper<Path> {
     return true;
   }
 }
-
-
-// class SunPainter extends CustomPainter {
-//   SunPainter(this.screen);
-//
-//   final Size screen;
-//
-//   final _paint = Paint()
-//     ..color = $style.colors.sun
-//     ..style = PaintingStyle.fill;
-//
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     canvas.drawOval(
-//       Rect.fromLTWH(screen.width - size.width - 100, screen.height * .1, size.width, size.height),
-//       _paint,
-//     );
-//   }
-//
-//   @override
-//   bool shouldRepaint(CustomPainter oldDelegate) => true;
-// }

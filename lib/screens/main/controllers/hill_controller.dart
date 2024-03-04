@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -16,24 +17,37 @@ class HillController extends GetxController {
   List<Hill> hills = [
     Hill(
       color: $style.colors.purple,
-      speed: .2,
+      speed: .4,
       total: 12,
       points: [],
     ),
     Hill(
       color: $style.colors.hotPink,
-      speed: .5,
+      speed: .7,
       total: 10,
       points: [],
     ),
     Hill(
       color: $style.colors.pink,
-      speed: 1,
+      speed: 1.2,
       total: 8,
       points: [],
     ),
   ];
 
+  void hillInit({required Size screen, required Hill hill}){
+    setPoints(screen: screen, hill: hill); // 초기 포인트 세팅
+    updateHill(screen: screen, hill: hill);
+  }
+
+  // 언덕 상태 업데이트
+  void updateHill({required Size screen, required Hill hill}){
+    Timer.periodic($style.times.ms33, (_) {
+      insertPoints(hill: hill, screen: screen); // point 삽입
+
+      update([hill.hashCode]);
+    });
+  }
 
   // 랜덤 y
   double getY(Size screen) {

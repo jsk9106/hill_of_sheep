@@ -101,6 +101,7 @@ class Insets {
 /// Animation Durations
 @immutable
 class Times {
+  final Duration ms33 = const Duration(milliseconds: 33); // 30fps
   final Duration ms150 = const Duration(milliseconds: 150);
   final Duration ms300 = const Duration(milliseconds: 300);
   final Duration ms5000 = const Duration(milliseconds: 5000);

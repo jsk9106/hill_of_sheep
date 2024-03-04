@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hill_of_sheep/config/constants.dart';
 import 'package:hill_of_sheep/data/hill.dart';
 import 'package:hill_of_sheep/screens/main/controllers/hill_controller.dart';
 
@@ -25,8 +24,8 @@ class Hills extends StatelessWidget {
   }
 }
 
-class OneHill extends StatefulWidget {
-  const OneHill({
+class OneHill extends StatelessWidget {
+  OneHill({
     super.key,
     required this.hill,
     required this.screen,
@@ -35,51 +34,21 @@ class OneHill extends StatefulWidget {
   final Hill hill;
   final Size screen;
 
-  @override
-  State<OneHill> createState() => _OneHillState();
-}
-
-class _OneHillState extends State<OneHill> with SingleTickerProviderStateMixin {
-  final HillController controller = Get.put(HillController());
-
-  late final Hill hill;
-  late final AnimationController _aniController;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    hill = widget.hill;
-    controller.setPoints(screen: widget.screen, hill: hill);
-
-    _aniController = AnimationController(vsync: this, duration: $style.times.ms5000);
-    _animation = Tween<double>(begin: 0, end: 1).animate(_aniController);
-
-    _aniController.addListener(() {
-      controller.insertPoints(hill: hill, screen: widget.screen); // point 삽입
-
-      if (_aniController.isCompleted) _aniController.repeat();
-
-      setState(() {});
-    });
-
-    _aniController.forward();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _aniController.dispose();
-    super.dispose();
-  }
+  final HillController controller = Get.find<HillController>();
 
   @override
   Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: HillClipper(hill),
-      child: Container(
-        color: hill.color,
-      ),
+    return GetBuilder<HillController>(
+      id: hill.hashCode,
+      initState: (state) => controller.hillInit(screen: screen, hill: hill),
+      builder: (_) {
+        return ClipPath(
+          clipper: HillClipper(hill),
+          child: Container(
+            color: hill.color,
+          ),
+        );
+      },
     );
   }
 }
